@@ -21,10 +21,11 @@ public class Product
 
 public class CartItem
 {
+    public int ProductId { get; set; } 
     public string Name { get; set; }
     public int Qty { get; set; }
     public double Total { get; set; }
-    public CartItem(string n, int q, double t) { Name = n; Qty = q; Total = t; }
+    public CartItem(int id, string n, int q, double t) { ProductId = id; Name = n; Qty = q; Total = t; }
 }
 
 class Program
@@ -55,51 +56,71 @@ class Program
             Console.WriteLine("===================================");
 
             Console.Write("\nEnter Product ID (0 to checkout): ");
-            if (!int.TryParse(Console.ReadLine(), out int id) || id == 0) break;
+            if (!int.TryParse(Console.ReadLine(), out int id)) { Console.WriteLine("[ERROR] Non-numeric input for product number."); continue; }
+            if (id == 0) break; 
 
             Product selected = null;
             foreach (var p in products) { if (p.Id == id) selected = p; }
 
-            if (selected != null)
+            if (selected == null) { Console.WriteLine("[ERROR] Invalid product number."); continue; }
+            if (selected.RemainingStock == 0) { Console.WriteLine("[ERROR] Item is out-of-stock."); continue; }
+
+            Console.Write($"Enter quantity for {selected.Name}: ");
+            if (int.TryParse(Console.ReadLine(), out int qty))
             {
-                Console.Write($"How many {selected.Name}? ");
-                if (int.TryParse(Console.ReadLine(), out int qty))
+                if (qty > selected.RemainingStock) { Console.WriteLine("[ERROR] Not enough stock available."); }
+                else if (qty <= 0) { Console.WriteLine("[ERROR] Invalid quantity."); }
+                else
                 {
-                    // --- THE STOCK CHECK LOGIC ---
-                    if (qty > selected.RemainingStock)
+                    double itemTotal = selected.GetItemTotal(qty);
+                    selected.RemainingStock -= qty;
+                    
+                    // --- NO DUPES LOGIC (Requirement 5 & 6) ---
+                    bool foundInCart = false;
+                    for (int i = 0; i < cartIndex; i++)
                     {
-                        Console.WriteLine($"\n[ERROR] Not enough stock! We only have {selected.RemainingStock} items left.");
-                    }
-                    else if (qty <= 0)
-                    {
-                        Console.WriteLine("\n[ERROR] Please enter a quantity greater than 0.");
-                    }
-                    else
-                    {
-                        // Success path
-                        double itemTotal = selected.GetItemTotal(qty);
-                        selected.RemainingStock -= qty;
-                        
-                        if (cartIndex < cart.Length) {
-                            cart[cartIndex++] = new CartItem(selected.Name, qty, itemTotal);
-                            grandTotal += itemTotal;
-                            Console.WriteLine("Added to cart!");
+                        if (cart[i].ProductId == selected.Id)
+                        {
+                            cart[i].Qty += qty;
+                            cart[i].Total += itemTotal;
+                            foundInCart = true;
+                            break;
                         }
                     }
+
+                    if (!foundInCart)
+                    {
+                        if (cartIndex < cart.Length) {
+                            cart[cartIndex++] = new CartItem(selected.Id, selected.Name, qty, itemTotal);
+                            Console.WriteLine("Added to cart confirmation.");
+                        } else {
+                            Console.WriteLine("Cart is full.");
+                        }
+                    }
+                    grandTotal += itemTotal;
                 }
             }
-            else { Console.WriteLine("Invalid ID!"); }
+            else { Console.WriteLine("[ERROR] Non-numeric input for quantity."); }
         }
 
-        // Receipt & Discount
-        Console.WriteLine("\n------- FINAL RECEIPT -------");
-        for (int i = 0; i < cartIndex; i++) 
-            Console.WriteLine($"{cart[i].Name} x{cart[i].Qty}: P{cart[i].Total}");
+        if (cartIndex > 0)
+        {
+            Console.WriteLine("\n------- FINAL RECEIPT -------");
+            for (int i = 0; i < cartIndex; i++) 
+                Console.WriteLine($"{cart[i].Name} x{cart[i].Qty}: P{cart[i].Total}");
 
-        double discount = grandTotal >= 5000 ? grandTotal * 0.10 : 0;
-        Console.WriteLine("-----------------------------");
-        Console.WriteLine($"Subtotal: P{grandTotal}");
-        if (discount > 0) Console.WriteLine($"Discount (10%): -P{discount}");
-        Console.WriteLine($"Total Amount Due: P{grandTotal - discount}");
+            double discount = grandTotal >= 5000 ? grandTotal * 0.10 : 0;
+            Console.WriteLine("-----------------------------");
+            Console.WriteLine($"Grand Total: P{grandTotal}");
+            if (discount > 0) Console.WriteLine($"Discount amount (10%): -P{discount}");
+            Console.WriteLine($"Final Total: P{grandTotal - discount}");
+
+            // --- POST-CHECKOUT STOCK (Requirement 12 & 14) ---
+            Console.WriteLine("\n--- UPDATED STOCK AFTER CHECKOUT ---");
+            foreach (var p in products)
+            {
+                Console.WriteLine($"{p.Name}: {p.RemainingStock} left");
+            }
+        }
     }
 }
