@@ -15,8 +15,7 @@ public class Product
         RemainingStock = stock;
     }
 
-    public void DisplayProduct() => Console.WriteLine($"[{Id}] {Name} | P{Price} | Stock: {RemainingStock}");
-    public bool HasEnoughStock(int qty) => RemainingStock >= qty;
+    public void DisplayProduct() => Console.WriteLine($"[{Id}] {Name} | Price: P{Price} | Stock: {RemainingStock}");
     public double GetItemTotal(int qty) => Price * qty;
 }
 
@@ -30,63 +29,77 @@ public class CartItem
 
 class Program
 {
-    static void Main()
+    static void Main(string[] args)
     {
         Product[] products = {
-            new Product(1, "Paracetamol", 5.00, 100),
-            new Product(2, "Ibuprofen", 8.00, 50),
-            new Product(3, "Amoxicillin", 15.00, 30),
+            new Product(1, "Paracetamol (500mg)", 5.00, 100),
+            new Product(2, "Ibuprofen (200mg)", 8.00, 50),
+            new Product(3, "Amoxicillin (500mg)", 15.00, 30),
             new Product(4, "Vitamin C", 12.00, 200),
             new Product(5, "Cetirizine", 10.00, 40),
             new Product(6, "Loperamide", 7.00, 60),
-            new Product(7, "Ascorbic Syrup", 120.00, 15),
-            new Product(8, "Antacid", 9.00, 80),
-            new Product(9, "ORS", 25.00, 25),
-            new Product(10, "Face Mask", 150.00, 10)
+            new Product(7, "Ascorbic Acid Syrup", 120.00, 15),
+            new Product(8, "Antacid Tablet", 9.00, 80),
+            new Product(9, "Oral Rehydration Salts", 25.00, 25),
+            new Product(10, "Face Mask (Box of 50)", 150.00, 10)
         };
 
-        CartItem[] cart = new CartItem[10];
+        CartItem[] cart = new CartItem[10]; 
         int cartIndex = 0;
         double grandTotal = 0;
 
         while (true)
         {
-            Console.WriteLine("\n--- PHARMACY ---");
+            Console.WriteLine("\n========== PHARMACY MENU ==========");
             foreach (var p in products) p.DisplayProduct();
+            Console.WriteLine("===================================");
 
-            Console.Write("\nEnter ID (0 to checkout): ");
+            Console.Write("\nEnter Product ID (0 to checkout): ");
             if (!int.TryParse(Console.ReadLine(), out int id) || id == 0) break;
 
             Product selected = null;
-            foreach (var p in products) if (p.Id == id) selected = p;
+            foreach (var p in products) { if (p.Id == id) selected = p; }
 
             if (selected != null)
             {
-                Console.Write($"Quantity for {selected.Name}: ");
-                if (int.TryParse(Console.ReadLine(), out int qty) && selected.HasEnoughStock(qty))
+                Console.Write($"How many {selected.Name}? ");
+                if (int.TryParse(Console.ReadLine(), out int qty))
                 {
-                    double itemTotal = selected.GetItemTotal(qty);
-                    selected.RemainingStock -= qty;
-                    
-                    if (cartIndex < cart.Length)
+                    // --- THE STOCK CHECK LOGIC ---
+                    if (qty > selected.RemainingStock)
                     {
-                        cart[cartIndex++] = new CartItem(selected.Name, qty, itemTotal);
-                        grandTotal += itemTotal;
-                        Console.WriteLine("Added!");
+                        Console.WriteLine($"\n[ERROR] Not enough stock! We only have {selected.RemainingStock} items left.");
+                    }
+                    else if (qty <= 0)
+                    {
+                        Console.WriteLine("\n[ERROR] Please enter a quantity greater than 0.");
+                    }
+                    else
+                    {
+                        // Success path
+                        double itemTotal = selected.GetItemTotal(qty);
+                        selected.RemainingStock -= qty;
+                        
+                        if (cartIndex < cart.Length) {
+                            cart[cartIndex++] = new CartItem(selected.Name, qty, itemTotal);
+                            grandTotal += itemTotal;
+                            Console.WriteLine("Added to cart!");
+                        }
                     }
                 }
-                else Console.WriteLine("Invalid qty/stock!");
             }
-            else Console.WriteLine("Invalid ID!");
+            else { Console.WriteLine("Invalid ID!"); }
         }
 
-        Console.WriteLine("\n--- RECEIPT ---");
-        for (int i = 0; i < cartIndex; i++)
+        // Receipt & Discount
+        Console.WriteLine("\n------- FINAL RECEIPT -------");
+        for (int i = 0; i < cartIndex; i++) 
             Console.WriteLine($"{cart[i].Name} x{cart[i].Qty}: P{cart[i].Total}");
 
         double discount = grandTotal >= 5000 ? grandTotal * 0.10 : 0;
-        Console.WriteLine($"\nSubtotal: P{grandTotal}");
+        Console.WriteLine("-----------------------------");
+        Console.WriteLine($"Subtotal: P{grandTotal}");
         if (discount > 0) Console.WriteLine($"Discount (10%): -P{discount}");
-        Console.WriteLine($"Total: P{grandTotal - discount}");
+        Console.WriteLine($"Total Amount Due: P{grandTotal - discount}");
     }
 }
