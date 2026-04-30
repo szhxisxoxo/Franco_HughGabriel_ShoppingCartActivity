@@ -1,33 +1,5 @@
 using System;
 
-public class Product
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public double Price { get; set; }
-    public int RemainingStock { get; set; }
-
-    public Product(int id, string name, double price, int stock)
-    {
-        Id = id;
-        Name = name;
-        Price = price;
-        RemainingStock = stock;
-    }
-
-    public void DisplayProduct() => Console.WriteLine($"[{Id}] {Name} | Price: P{Price} | Stock: {RemainingStock}");
-    public double GetItemTotal(int qty) => Price * qty;
-}
-
-public class CartItem
-{
-    public int ProductId { get; set; } 
-    public string Name { get; set; }
-    public int Qty { get; set; }
-    public double Total { get; set; }
-    public CartItem(int id, string n, int q, double t) { ProductId = id; Name = n; Qty = q; Total = t; }
-}
-
 class Program
 {
     static void Main(string[] args)
@@ -75,7 +47,6 @@ class Program
                     double itemTotal = selected.GetItemTotal(qty);
                     selected.RemainingStock -= qty;
                     
-                    // --- NO DUPES LOGIC (Requirement 5 & 6) ---
                     bool foundInCart = false;
                     for (int i = 0; i < cartIndex; i++)
                     {
@@ -105,17 +76,41 @@ class Program
 
         if (cartIndex > 0)
         {
+            double discount = grandTotal >= 5000 ? grandTotal * 0.10 : 0;
+            double finalTotal = grandTotal - discount;
+
             Console.WriteLine("\n------- FINAL RECEIPT -------");
             for (int i = 0; i < cartIndex; i++) 
                 Console.WriteLine($"{cart[i].Name} x{cart[i].Qty}: P{cart[i].Total}");
 
-            double discount = grandTotal >= 5000 ? grandTotal * 0.10 : 0;
             Console.WriteLine("-----------------------------");
             Console.WriteLine($"Grand Total: P{grandTotal}");
             if (discount > 0) Console.WriteLine($"Discount amount (10%): -P{discount}");
-            Console.WriteLine($"Final Total: P{grandTotal - discount}");
+            Console.WriteLine($"Final Total: P{finalTotal}");
 
-            // --- POST-CHECKOUT STOCK (Requirement 12 & 14) ---
+            double payment = 0;
+            while (true) 
+            {
+                Console.Write("\nEnter Payment Amount: P");
+                if (double.TryParse(Console.ReadLine(), out payment))
+                {
+                    if (payment >= finalTotal) 
+                    {
+                        double change = payment - finalTotal; 
+                        Console.WriteLine($"Payment Accepted! Your change: P{change}");
+                        break; 
+                    }
+                    else 
+                    {
+                        Console.WriteLine($"[ERROR] Insufficient funds. You still owe P{finalTotal - payment}.");
+                    }
+                }
+                else 
+                {
+                    Console.WriteLine("[ERROR] Invalid input. Please enter a numeric amount.");
+                }
+            }
+
             Console.WriteLine("\n--- UPDATED STOCK AFTER CHECKOUT ---");
             foreach (var p in products)
             {
