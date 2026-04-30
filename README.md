@@ -22,3 +22,36 @@ Code Cleanup: AI helped me simplify my code to make it more readable while still
 3. Setting Up Github
 
 Used AI to set up github and other github related functions needed in this project.
+
+
+PART 2 OF THE PROJECT
+
+All source code within this repository was authored and implemented independently by the developer. AI (Gemini) was utilized strictly as a Technical Consultant and Conceptual Guide, not as a generative tool for the project’s core logic. The collaboration focused on architectural advice, debugging, and environment configuration.
+
+1. AI USAGE (AI as a Guide)
+Conceptual Brainstorming: AI was used to discuss the most efficient ways to structure the inventory search (e.g., whether to use lists or arrays).
+
+Logical Walkthroughs: Instead of generating code, AI provided "pseudo-code" explanations to help the developer understand how to implement the [LOW STOCK ALERT] logic manually.
+
+Error Interpretation: When VS Code flagged namespace or nullable warnings, AI was used to explain the meaning of the errors so the developer could fix them.
+
+Git & Repository: AI provided the specific terminal sequences needed to resolve the .gitignore issues and manage the Part2-Submission branch.
+
+2. Detailed Prompt Log
+To ensure full transparency, the following prompts represent how AI was consulted during the development of Part 2:
+
+Logic Guidance: "Can you explain the logic behind filtering a C# list based on a string property? I want to implement a 'Medicine' search for my pharmacy project."
+
+Feature Conceptualization: "I need to flag items with low stock (quantity < 5). What is the best way to integrate a conditional check into my existing console display loop?"
+
+"I want my search to work even if the user types 'medicine' in lowercase. What is the standard C# method for comparing strings regardless of their case?"
+
+Technical Troubleshooting: "I'm seeing a 'CS8618' nullable warning in my Product class. Explain what this means in the context of C# 10.0 and how I should initialize my properties."
+
+Debugging: "What causes a 'pathspec did not match any files' error in Mac terminal?"
+
+Environment Support: "Git is currently ignoring files I need to track. Walk me through the steps to find which line in my .gitignore is causing a global ignore."
+
+Workflow Assistance: "Explain the difference between a standard push and a force push in Git, and when it is appropriate to use it during a project submission."
+
+Once again AI was not used to generate code for the developer but as a tool.
