@@ -33,7 +33,7 @@ namespace PharmacySystem
                 if (!int.TryParse(Console.ReadLine(), out int id)) { Console.WriteLine("[ERROR] Non-numeric input for product number."); continue; }
                 if (id == 0) break; 
 
-                Product selected = null;
+                Product? selected = null;
                 foreach (var p in products) { if (p.Id == id) selected = p; }
 
                 if (selected == null) { Console.WriteLine("[ERROR] Invalid product number."); continue; }
