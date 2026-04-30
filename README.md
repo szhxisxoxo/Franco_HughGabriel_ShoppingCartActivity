@@ -55,3 +55,20 @@ Environment Support: "Git is currently ignoring files I need to track. Walk me t
 Workflow Assistance: "Explain the difference between a standard push and a force push in Git, and when it is appropriate to use it during a project submission."
 
 Once again AI was not used to generate code for the developer but as a tool.
+
+## Functional Proofs
+
+### 1. Product Search by Category
+![Search Proof](SearchFunctionProof.png)
+
+### 2. Transaction History
+![History Proof](OrderHistoryProof.png)
+
+### 3. Low Stock Alerts
+![Stock Alert Proof](StockAlertProof.png)
+
+### 4. Checkout and Payment (Exact Change)
+![Payment Proof](PaymentProof.png)
+
+### 5. Input Validation (Y/N)
+![Validation Proof](YNValidation.png)
