@@ -56,6 +56,13 @@ Workflow Assistance: "Explain the difference between a standard push and a force
 
 Once again AI was not used to generate code for the developer but as a tool.
 
+Key Features
+*   **Dynamic Product Search**: Users can now filter the inventory by category, making it easier to navigate larger product lists.
+*   **Transaction History**: A dedicated logging system that tracks and displays previous purchases during the current session.
+*   **Low Stock Alerts**: Items with 5 or fewer units remaining are automatically flagged with a `[LOW STOCK ALERT]` tag in the display.
+*   **Exact Change Payment Logic**: The checkout system validates payments; if the amount entered equals the total, it processes the transaction with a zero-balance confirmation.
+*   **Input Validation (Y/N)**: Implemented strict error handling for user prompts. The system rejects invalid characters and re-prompts until a valid 'y' or 'n' is entered.
+
 ## Functional Proofs
 
 ### 1. Product Search by Category
