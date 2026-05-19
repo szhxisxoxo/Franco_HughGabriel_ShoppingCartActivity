@@ -1,20 +1,18 @@
-using System;
-
 namespace PharmacySystem
 {
     public class CartItem
     {
-        public int ProductId { get; set; } 
-        public string Name { get; set; }
-        public int Qty { get; set; }
-        public double Total { get; set; }
+        public int ProductId { get; private set; } 
+        public string Name { get; private set; }
+        public int Qty { get; private set; }
+        public double Total { get; private set; }
 
-        public CartItem(int id, string n, int q, double t) 
+        public CartItem(int id, string name, int qty, double total) 
         { 
             ProductId = id; 
-            Name = n; 
-            Qty = q; 
-            Total = t; 
+            Name = name; 
+            Qty = qty; 
+            Total = total; 
         }
     }
-}   
+}

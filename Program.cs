@@ -49,15 +49,21 @@ namespace PharmacySystem
                         else
                         {
                             Console.Write("Enter quantity: ");
-                            if (int.TryParse(Console.ReadLine(), out int qty) && qty > 0 && qty <= selected.RemainingStock)
+                            if (int.TryParse(Console.ReadLine(), out int qty) && qty > 0)
                             {
-                                double total = selected.GetItemTotal(qty);
-                                cart[cartIndex++] = new CartItem(selected.Id, selected.Name, qty, total);
-                                selected.RemainingStock -= qty;
-                                grandTotal += total;
-                                Console.WriteLine("Added to cart!");
+                                if (selected.ReduceStock(qty))
+                                {
+                                    double total = selected.GetItemTotal(qty);
+                                    cart[cartIndex++] = new CartItem(selected.Id, selected.Name, qty, total);
+                                    grandTotal += total;
+                                    Console.WriteLine("Added to cart!");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("[ERROR] Not enough stock.");
+                                }
                             }
-                            else Console.WriteLine("[ERROR] Invalid quantity or not enough stock.");
+                            else Console.WriteLine("[ERROR] Invalid quantity.");
                         }
                     }
                 }
@@ -115,14 +121,34 @@ namespace PharmacySystem
                     Console.Write("Enter line number to remove: ");
                     if (int.TryParse(Console.ReadLine(), out int idx) && idx > 0 && idx <= cartIndex)
                     {
-                        foreach(var p in products) if(p.Id == cart[idx-1].ProductId) p.RemainingStock += cart[idx-1].Qty;
+                        foreach(var p in products) 
+                        {
+                            if(p.Id == cart[idx-1].ProductId) 
+                            {
+                                p.AddStock(cart[idx-1].Qty);
+                            }
+                        }
+                        
                         grandTotal -= cart[idx-1].Total;
                         for (int i = idx - 1; i < cartIndex - 1; i++) cart[i] = cart[i + 1];
                         cartIndex--;
                         Console.WriteLine("Item removed.");
                     }
                 }
-                else if (choice == "2") { cartIndex = 0; grandTotal = 0; break; }
+                else if (choice == "2") 
+                { 
+                    for (int i = 0; i < cartIndex; i++)
+                    {
+                        foreach(var p in products)
+                        {
+                            if (p.Id == cart[i].ProductId) p.AddStock(cart[i].Qty);
+                        }
+                    }
+                    cartIndex = 0; 
+                    grandTotal = 0; 
+                    Console.WriteLine("Cart cleared.");
+                    break; 
+                }
             }
         }
 
